@@ -1,9 +1,17 @@
 mod vec3;
 mod color;
+mod ray;
 
-use vec3::Point3;
 use color::Color;
+use ray::Ray;
+use vec3::{Point3, Vec3};
 
+fn ray_color(r: &Ray) -> Color {
+    let unit_dir = r.direction().unit_vector();
+    let t = 0.5 * (unit_dir.y() + 1.0);
+    (1.0 - t) * Color::new(0.0, 0.0, 0.0) + t * Color::new(0.5, 0.7, 1.0)
+
+}
 
 fn main() {
     const IMAGE_HEIGHT: u16 = 256;
