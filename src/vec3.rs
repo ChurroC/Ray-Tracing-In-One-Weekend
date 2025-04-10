@@ -12,6 +12,13 @@ impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
+    pub fn new_vec(vec: Vec3) -> Self {
+        Self {
+            x: vec.x,
+            y: vec.y,
+            z: vec.z,
+        }
+    }
 
     pub fn dot(&self, vec: Vec3) -> f64 {
         self.x * vec.x + self.y * vec.y + self.z * vec.z

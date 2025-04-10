@@ -6,9 +6,29 @@ use color::Color;
 use ray::Ray;
 use vec3::{Point3, Vec3};
 
+
+fn hit_sphere(center: Point3, radius: f64, r: &Ray) -> f64 {
+    let orig_cen = r.origin() - center;
+    let a = r.direction().dot(r.direction());
+    let b = 2.0 * orig_cen.dot(r.direction());
+    let c = orig_cen.dot(orig_cen) - radius * radius;
+    let discriminant = b * b - 4.0 * a * c;
+    
+    if discriminant < 0.0 {
+        -1.0
+    } else {
+        return (-b - f64::sqrt(discriminant)) / (2.0 * a);
+    }
+}
+
 fn ray_color(r: &Ray) -> Color {
-    if hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, r) {
-        return Color::new(1.0, 0.0, 0.0);
+    let sphere_origin = Point3::new(0.0, 0.0, -1.0);
+    // At whats t value does the ray hit the sphere
+    let t = hit_sphere(sphere_origin, 0.5, r);
+    if t > 0.0 {
+        // normal is also radius vector
+        let normal = (r.at(t) - sphere_origin).unit_vector();
+        return 0.5 * Color::new_vec(normal + Vec3::new(1.0, 1.0, 1.0));
     }
 
     let unit_dir = r.direction().unit_vector();
@@ -18,15 +38,6 @@ fn ray_color(r: &Ray) -> Color {
     // Just switched to dot product to project how much of vec is in the y direction
     let t = 0.5 * (unit_dir.dot(Vec3::new(0.0, 1.0, 0.0)) + 1.0);
     (1.0 - t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
-}
-
-fn hit_sphere(center: Point3, radius: f64, r: &Ray) -> bool {
-    let orig_cen = r.origin() - center;
-    let a = r.direction().dot(r.direction());
-    let b = 2.0 * orig_cen.dot(r.direction());
-    let c = orig_cen.dot(orig_cen) - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
-    discriminant >= 0.0
 }
 
 fn main() {
