@@ -7,25 +7,24 @@ use ray::Ray;
 use vec3::{Point3, Vec3};
 
 
-fn hit_sphere(center: Point3, radius: f64, r: &Ray) -> f64 {
+fn hit_sphere(center: Point3, radius: f64, r: &Ray) -> Option<f64> {
     let orig_cen = r.origin() - center;
     let a = r.direction().dot(r.direction());
-    let b = 2.0 * orig_cen.dot(r.direction());
+    let half_b = orig_cen.dot(r.direction());
     let c = orig_cen.dot(orig_cen) - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
-    
+    let discriminant = half_b*half_b - a*c;
+
     if discriminant < 0.0 {
-        -1.0
+        None
     } else {
-        return (-b - f64::sqrt(discriminant)) / (2.0 * a);
+        Some((-half_b - f64::sqrt(discriminant)) / a)
     }
 }
 
 fn ray_color(r: &Ray) -> Color {
     let sphere_origin = Point3::new(0.0, 0.0, -1.0);
     // At whats t value does the ray hit the sphere
-    let t = hit_sphere(sphere_origin, 0.5, r);
-    if t > 0.0 {
+    if let Some(t) = hit_sphere(sphere_origin, 0.5, r) {
         // normal is also radius vector
         let normal = (r.at(t) - sphere_origin).unit_vector();
         return 0.5 * Color::new_vec(normal + Vec3::new(1.0, 1.0, 1.0));
@@ -68,7 +67,7 @@ fn main() {
     // This is the center of the pixel at 0,0
     let pixel_00_center = upper_left_corner + pixel_delta_u / 2.0 + pixel_delta_v / 2.0;
 
-    print!("P3\n{IMAGE_WIDTH} {IMAGE_HEIGHT}\n255");
+    print!("P3\n{IMAGE_WIDTH} {IMAGE_HEIGHT}\n255\n");
     for v in 0..IMAGE_HEIGHT {
         // eprint!("line {} - ", v + 1);
         for u in 0..IMAGE_WIDTH {
