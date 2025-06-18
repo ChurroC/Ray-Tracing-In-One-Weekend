@@ -31,7 +31,7 @@ impl Vec3 {
     pub fn cross(&self, vec: Vec3) -> Vec3 {
         Vec3::new(
             self.y * vec.z - self.z * vec.y,
-            self.z * vec.x - self.x * vec.z,
+            - self.x * vec.z + self.z * vec.x,
             self.x * vec.y - self.y * vec.x,
         )
     }
